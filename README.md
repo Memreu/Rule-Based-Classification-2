@@ -1,108 +1,32 @@
-# 🎯 Kural Tabanlı Sınıflandırma ile Potansiyel Müşteri Getirisi Hesaplama
+# Persona Bazlı Kural Tabanlı Sınıflandırma
 
-📌 Bu proje, uluslararası bir oyun şirketinin müşteri verileri kullanılarak **level-based (seviye tabanlı)** yeni müşteri tanımları (**persona**) oluşturmayı, bu müşteri gruplarını segmentlere ayırmayı ve her segment için potansiyel getiri tahmini yapmayı amaçlamaktadır.  
-Çalışmada, veri seti üzerinde **kural tabanlı segmentasyon** teknikleri uygulanmış, **fiyat analizleri** yapılmış ve sonuçlar **grafikler** ile görselleştirilmiştir.
+Miuul bootcamp'inde yaptığım ikinci kural tabanlı sınıflandırma çalışması. Bu kez veri, uluslararası bir oyun şirketinin satış kayıtlarından oluşuyor ve amaç müşterileri ülke, cihaz, cinsiyet ve yaş grubuna göre "persona"lara ayırıp her personanın şirkete ortalama ne kadar kazandırdığını bulmak. Görevdeki örnek soru: Türkiye'den iOS kullanan 25 yaşında bir erkek kullanıcı ortalama ne kadar getirir?
 
-💻 **Jupyter Notebook** formatında geliştirilmiş olup, veri analizi ve sınıflandırma adımlarını **adım adım** içermektedir.
+## Veri
 
----
+`persona.csv` dosyası bootcamp tarafından verildi. 5.000 satır ve 5 değişkenden oluşuyor: PRICE (harcama), SOURCE (android/ios), SEX, COUNTRY ve AGE. Her satır bir satış işlemi olduğu için tablo tekilleştirilmemiş; aynı özelliklere sahip bir kullanıcı birden fazla kez görünebiliyor. Fiyat aslında sürekli değil, yalnızca 6 farklı değer alıyor (9, 19, 29, 39, 49, 59) ve ortalaması 34.13. Satışların 2.065'i ABD'den, 2.974'ü Android cihazlardan geliyor.
 
-## 📚 İçindekiler
+## Nasıl ilerledim
 
-- [📌 Proje Hakkında](#-proje-hakkında)  
-- [🛠 Kullanılan Teknolojiler](#-kullanılan-teknolojiler)  
-- [⚙️ Kurulum](#%EF%B8%8F-kurulum)  
-- [🚀 Kullanım](#-kullanım)  
-- [📊 Veri Seti](#-veri-seti)  
-- [📈 Sonuçlar](#-sonuçlar)  
-- [🔄 Çalışma Akışı](#-çalışma-akışı)   
+- Önce ülke, cihaz ve fiyat kırılımlarında frekanslara ve ortalamalara baktım.
+- COUNTRY, SOURCE, SEX, AGE kırılımında ortalama fiyatı hesaplayıp azalan sırada sıraladım.
+- Yaşı 0_18, 19_23, 24_30, 31_40 ve 41_70 olmak üzere beş gruba ayırdım.
+- Bu değişkenleri birleştirerek `TUR_ANDROID_FEMALE_31_40` gibi persona tanımları oluşturdum ve her persona için ortalama fiyatı aldım.
+- Ortalamaları `qcut` ile dört çeyreğe bölüp D, C, B, A segmentlerini atadım.
 
----
+## Sonuçlar
 
-## 📌 Proje Hakkında
+Veride 109 farklı persona oluştu. Segmentlerin ortalama getirileri D için 29.21, C için 33.51, B için 35.00 ve A için 38.69. Segmentler arasındaki fark çok büyük değil; bunun bir nedeni fiyatın zaten dar ve kesikli bir aralıkta olması.
 
-Bu proje kapsamında:  
+Denediğim iki yeni kullanıcı örneğinde `TUR_ANDROID_FEMALE_31_40` A segmentine düştü (beklenen ortalama 41.83), `FRA_IOS_FEMALE_31_40` ise C segmentine (32.82).
 
-✅ Müşteri verilerinden **persona** tanımları oluşturulmuştur.  
-✅ Her persona **segmentlere** ayrılmıştır.  
-✅ Segment bazlı **ortalama gelir tahmini** yapılmıştır.  
-✅ Sonuçlar **tablolar** ve **grafikler** ile sunulmuştur.
+Gezinomi çalışmasına göre burada dikkatimi çeken nokta, olası 120 kombinasyondan yalnızca 109'unun veride bulunması oldu. Yani bazı yeni kullanıcılar için hiç tahmin üretilemiyor; notebook bu durumda "veri bulunamadı" diyor. Bunun yanında persona ortalamaları, alt gruptaki ortalamaların tekrar ortalaması alınarak hesaplandığı için gözlem sayısıyla ağırlıklandırılmış değil.
 
-> 🔍 **Amaç:** Örneğin, Türkiye’den IOS kullanıcısı olan 25 yaşındaki bir erkek müşterinin şirkete ortalama ne kadar kazandıracağını tahmin etmek.
-
----
-
-## 🛠 Kullanılan Teknolojiler
-
-| Teknoloji | Açıklama |
-|-----------|----------|
-| **Python 3.x** | Ana programlama dili |
-| **Jupyter Notebook** | Çalışma ortamı |
-| **Pandas** | Veri analizi |
-| **NumPy** | Sayısal hesaplamalar |
-| **Matplotlib / Seaborn** | Veri görselleştirme |
-
----
-
-## ⚙️ Kurulum
-
-1️⃣ **Python** ve **Jupyter Notebook** bilgisayarınızda kurulu değilse yükleyin.  
-2️⃣ Projeyi klonlayın veya indirin:  
+## Çalıştırmak için
 
 ```bash
-git clone https://github.com/Memreu/Rule-Based-Classification-2.git
-cd Rule-Based-Classification-2
+pip install -r requirements.txt
+jupyter notebook Rule-Based-Classification.ipynb
 ```
 
-3️⃣ Gerekli kütüphaneleri yükleyin:  
-
-```bash
-pip install pandas numpy matplotlib seaborn
-```
-
----
-
-## 🚀 Kullanım
-
-💡 **Notebook dosyası** içerisinde adım adım kod blokları ve açıklamalar mevcuttur.  
-
-1. `Rule-Based-Classification.ipynb` dosyasını Jupyter Notebook ile açın.  
-2. Kod hücrelerini **sırasıyla çalıştırın**.  
-3. Kendi verinizi kullanmak isterseniz veri yükleme adımındaki **dosya yolunu** değiştirin.  
-
----
-
-## 📊 Veri Seti
-
-📂 **Persona.csv** veri seti, uluslararası bir oyun şirketinin sattığı ürünlerin fiyatlarını ve bu ürünleri satın alan kullanıcıların bazı demografik bilgilerini içermektedir.  
-Veri seti her satış işleminde oluşan kayıtlardan meydana gelir, bu nedenle **tekilleştirilmemiştir**.  
-
-**Değişkenler:**  
-- **PRICE:** Müşterinin harcama tutarı  
-- **SOURCE:** Müşterinin bağlandığı cihaz türü  
-- **SEX:** Müşterinin cinsiyeti  
-- **COUNTRY:** Müşterinin ülkesi  
-- **AGE:** Müşterinin yaşı  
-
----
-
-## 📈 Sonuçlar
-
-📌 Proje sonucunda:  
-
-1. Veriler, **kural tabanlı sınıflandırma** ile segmentlere ayrıldı.  
-2. Her segment için ortalama gelir tahminleri yapıldı.  
-3. Sonuçlar **grafik** ve **tablo** formatında görselleştirildi.  
-
----
-
-## 🔄 Çalışma Akışı
-
-\`\`\`mermaid
-flowchart TD
-    A[Veri Seti Yükleme] --> B[Veri Ön İşleme]
-    B --> C[Persona Oluşturma]
-    C --> D[Segmentlere Ayırma]
-    D --> E[Gelir Tahmini]
-    E --> F[Sonuçların Görselleştirilmesi]
-\`\`\`
+İleride persona ortalamalarını doğrudan ham veriden ağırlıklı olarak hesaplamak ve veride olmayan kombinasyonlar için bir üst seviyeye (örneğin yalnızca ülke ve cihaz) geri dönen basit bir kural eklemek istiyorum.
